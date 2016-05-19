@@ -6,7 +6,10 @@ class Cell:
     neighborCount = 0
 
     def __init__(self, state):
-        self.state = state
+	self.setState(state)
+
+    def setState(self, state):
+	self.state = state
 
 class Board:
     xSize = 40
@@ -19,6 +22,7 @@ class Board:
         self.ySize = ySize
         self.board = [[Cell("Unswept") for y in range(self.ySize)] \
                        for x in range(self.xSize)] 
+        self.randomize()
     
     def printBoard(self):
         for i in range(self.xSize):

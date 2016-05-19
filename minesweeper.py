@@ -1,13 +1,10 @@
 import OlsonMS
 from Tkinter import *
 
-xSize = 7
-ySize = 5
+xSize = 70
+ySize = 50
 
-WIDTH = 100*xSize
-HEIGHT = 100*ySize
-
-class Minesweeper(Frame):
+class MinesweeperDeprecated(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent, background="white")
         self.parent = parent
@@ -25,27 +22,50 @@ class Minesweeper(Frame):
         self.pack(fill=BOTH, expand=1)
         self.centerWindow()
 
+def frame(root, side):
+    w = Frame(root)
+    w.pack(side=side, expand=YES, fill=BOTH)
+    return w
+
+def button(root, side, text, command=None):
+    w = Button(root, text=text, command=command)
+    w.pack(side=side, expand=YES, fill=BOTH)
+    return w
+
+class Minesweeper(Frame):
+    board = OlsonMS.Board(xSize, ySize)
+
+    def __init__(self):
+        Frame.__init__(self)
+        self.pack(expand=YES, fill=BOTH)
+        self.master.title('Minesweeper')
+
+        f = frame(self, TOP)
+        self.btn = [[0 for x in range(0, xSize)] for y in range(0, ySize)]
+        for x in range(0, xSize):
+            for y in range(0, ySize):
+                textval = ' '
+                self.btn[x][y] = Button(f, text=textval, \
+                        command = lambda x=x, y=y: self.updateState(x, y))
+                self.btn[x][y].grid(column=x, row=y)
+
+    def updateState(self, x, y):
+        self.board.sweep(x, y)
+        for x in range(0, xSize):
+            for y in range(0, ySize):
+                textval = ' '
+                cell = self.board.board[x][y]
+                cellState = cell.state
+                if "Swept" == cellState:
+                    if cell.neighborCount > 0:
+                        textval = str(cell.neighborCount)
+                    else:
+                        textval = '*'
+                self.btn[x][y].config(text=textval)
+
 if __name__ == "__main__":
-    xSize = 40
-    ySize = 40
-    b = OlsonMS.Board(xSize, ySize)
-    b.printBoard()
+    xSize = 20
+    ySize = 20
 
-    b.printBoard()
-
-    b.randomize()
-
-    b.printBoard()
-
-    for x in range(0, xSize):
-        for y in range(0, ySize):
-            b.sweep(x, y)
-
-    b.printBoard()
-
-    sys.exit()
-    root = Tk()
-    root.geometry(str(WIDTH) + 'x' + str(HEIGHT))
-    app = Minesweeper(root)
-    root.mainloop()
+    Minesweeper().mainloop()
 
